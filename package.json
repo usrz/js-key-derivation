@@ -1,7 +1,7 @@
 {
-  "name": "usrz-kdf",
-  "description": "Key Derivation Functions",
-  "version": "0.0.0",
+  "name": "key-derivation",
+  "description": "Abstraction around various Key Derivation Functions",
+  "version": "1.0.0",
   "author": {
     "name": "Pier Fumagalli",
     "email": "pier@usrz.com"
@@ -13,6 +13,15 @@
     "url": "https://github.com/usrz/js-key-derivation"
   },
   "homepage": "https://github.com/usrz/js-key-derivation",
+  "keywords": [
+    "crypto",
+    "cryptography",
+    "kdf"
+    "bcrypt",
+    "pbkdf2",
+    "scrypt",
+    "passwords"
+  ],
   "devDependencies": {
     "chai": "^2.2.0",
     "grunt": "^0.4.5",
