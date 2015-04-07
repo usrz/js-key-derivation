@@ -1,7 +1,7 @@
 'use strict';
 
-var hashes = require('./kdf-hashes');
-var BaseKDF = require('./kdf-base');
+var BaseKDF = require('./basekdf');
+var hashes = require('../hashes');
 var scrypt = require('scrypt');
 var util = require('util');
 
@@ -17,7 +17,7 @@ function makeSpec(defaultSpec, spec) {
     throw new TypeError('CPU/Memory cost is not a number');
   newSpec.cpu_memory_cost = Number(spec.cpu_memory_cost)
                          || Number(defaultSpec.cpu_memory_cost)
-                         || 16384;
+                         || 32768;
 
   // Normalize block size
   if (spec.block_size && Number.isNaN(Number(spec.block_size)))
@@ -80,6 +80,7 @@ function deriveKey(secret, salt, spec, callback) {
 }
 
 // Our Scrypt class
+util.inherits(Scrypt, BaseKDF);
 function Scrypt(kdfSpec) {
   if (!(this instanceof Scrypt)) return new Scrypt();
 
@@ -97,9 +98,6 @@ Object.defineProperty(Scrypt, 'defaultSpec', {
     return JSON.parse(JSON.stringify(defaultSpec));
   }
 });
-
-// Inherit from base KDF
-util.inherits(Scrypt, BaseKDF);
 
 // Export our class
 exports = module.exports = Scrypt;

@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var PBKDF2 = require('../src/kdf-pbkdf2.js');
+var PBKDF2 = require('../src/plugins/pbkdf2.js');
 
 describe('PBKDF2', function() {
   describe('KDF Spec', function() {
@@ -8,7 +8,7 @@ describe('PBKDF2', function() {
       expect(PBKDF2.defaultSpec).to.eql({
         algorithm: 'PBKDF2',
         hash: "SHA256",
-        iterations: 4096,
+        iterations: 65536,
         derived_key_length: 32
       });
     });
@@ -16,12 +16,12 @@ describe('PBKDF2', function() {
     it('should construct with a different spec', function() {
       expect(new PBKDF2({
         hash: "SHA512",
-        iterations: 65535,
+        iterations: 1024,
         derived_key_length: 128
       }).kdfSpec).to.eql({
         algorithm: 'PBKDF2',
         hash: 'SHA512',
-        iterations: 65535,
+        iterations: 1024,
         derived_key_length: 128
       });
     });

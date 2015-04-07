@@ -1,7 +1,6 @@
 'use strict';
 
-var hashes = require('./kdf-hashes');
-var BaseKDF = require('./kdf-base');
+var BaseKDF = require('./basekdf');
 var bcrypt = require('bcrypt');
 var util = require('util');
 
@@ -49,10 +48,6 @@ function makeSpec(defaultSpec, spec) {
   // Normalize algorithm to upper case
   newSpec.algorithm = (spec.algorithm || defaultSpec.algorithm || 'BCRYPT').toUpperCase();
 
-  // Normalize and validate the hash name
-  var hash = spec.hash || defaultSpec.hash || null;
-  if (hash) newSpec.hash = hashes.validate(hash);
-
   // Normalize rounds
   if (spec.rounds && Number.isNaN(Number(spec.rounds)))
     throw new TypeError('Rounds is not a number');
@@ -90,7 +85,8 @@ function deriveKey(secret, salt, spec, callback) {
   });
 }
 
-// Our   class
+// Our Bcrypt class
+util.inherits(Bcrypt, BaseKDF);
 function Bcrypt(kdfSpec) {
   if (!(this instanceof Bcrypt)) return new Bcrypt();
 
@@ -120,9 +116,6 @@ Object.defineProperties(Bcrypt, {
     value: stringToBuffer
   }
 });
-
-// Inherit from base KDF
-util.inherits(Bcrypt, BaseKDF);
 
 // Export our class
 exports = module.exports = Bcrypt;

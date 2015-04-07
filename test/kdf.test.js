@@ -1,0 +1,202 @@
+var expect = require('chai').expect;
+var KDF = require('../src/kdf');
+
+describe('Key Derivation', function() {
+
+  it('should expose the default spec (scrypt\'s)', function() {
+    expect(KDF.defaultSpec).to.eql({
+      algorithm: 'SCRYPT',
+      hash: "SHA256",
+      cpu_memory_cost: 32768,
+      parallelization: 1,
+      block_size: 8,
+      derived_key_length: 32
+    });
+  });
+
+  it('should support empty construction', function() {
+    expect(new KDF().kdfSpec).to.eql({
+      algorithm: 'SCRYPT',
+      hash: "SHA256",
+      cpu_memory_cost: 32768,
+      parallelization: 1,
+      block_size: 8,
+      derived_key_length: 32
+    });
+  });
+
+  it('should construct with an algorithm name', function() {
+    expect(new KDF('PbKdF2').kdfSpec).to.eql({
+      algorithm: 'PBKDF2',
+      hash: "SHA256",
+      iterations: 65536,
+      derived_key_length: 32
+    });
+  });
+
+  it('should construct with an full KDF spec', function() {
+    expect(new KDF({
+      algorithm: 'bcrYpt',
+      rounds: 31
+    }).kdfSpec).to.eql({
+      algorithm: 'BCRYPT',
+      rounds: 31
+    });
+  });
+
+  it('should not construct without specifying an algorithm', function() {
+    expect(function() {
+      new KDF({});
+    }).to.throw('KDF spec does not define the algorithm');
+  });
+
+  it('should not construct an unknown algorithm', function() {
+    expect(function() {
+      new KDF('random');
+    }).to.throw('Unsupported algorithm random');
+  });
+
+  it('should not construct with garbage', function() {
+    expect(function() {
+      new KDF(123);
+    }).to.throw('Can not construct with number');
+  });
+
+  describe('Callback operation', function() {
+
+    it('should work with Bcrypt', function(done) {
+      new KDF('bcrypt').deriveKey("password", "saltsaltsaltsalt", function(err, result) {
+        if (err) return done(err);
+
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('2ab47f39e9a03ebd57d61ba4bc71250a12e11bf48bcc8f', 'hex'),
+            salt: new Buffer('saltsaltsaltsalt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'BCRYPT',
+              rounds: 10
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it('should work with PBKDF2', function(done) {
+      new KDF('pbkdf2').deriveKey("password", "salt", function(err, result) {
+        if (err) return done(err);
+
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('4156f668bb31db3a17f4d1b91424ef0d417ad1f35d055aceaebd8da0f6a44b7e', 'hex'),
+            salt: new Buffer('salt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'PBKDF2',
+              hash: 'SHA256',
+              iterations: 65536,
+              derived_key_length: 32
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it('should work with Scrypt', function(done) {
+      new KDF('scrypt').deriveKey("password", "salt", function(err, result) {
+        if (err) return done(err);
+
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('4bc0fd507e93a600768021341ec726c57c00cb55a4702a1650131365500cf471', 'hex'),
+            salt: new Buffer('salt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'SCRYPT',
+              hash: 'SHA256',
+              cpu_memory_cost: 32768,
+              block_size: 8,
+              parallelization: 1,
+              derived_key_length: 32
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe('Promises operation', function() {
+
+    it('should work with Bcrypt', function(done) {
+      new KDF('bcrypt').promiseKey("password", "saltsaltsaltsalt").then(function(result) {
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('2ab47f39e9a03ebd57d61ba4bc71250a12e11bf48bcc8f', 'hex'),
+            salt: new Buffer('saltsaltsaltsalt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'BCRYPT',
+              rounds: 10
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      }, function(error) {
+        done(err);
+      });
+    });
+
+    it('should work with PBKDF2', function(done) {
+      new KDF('pbkdf2').promiseKey("password", "salt").then(function(result) {
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('4156f668bb31db3a17f4d1b91424ef0d417ad1f35d055aceaebd8da0f6a44b7e', 'hex'),
+            salt: new Buffer('salt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'PBKDF2',
+              hash: 'SHA256',
+              iterations: 65536,
+              derived_key_length: 32
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      }, function(error) {
+        done(err);
+      });
+    });
+
+    it('should work with SCRYPT', function(done) {
+      new KDF('scrypt').promiseKey("password", "salt").then(function(result) {
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('4bc0fd507e93a600768021341ec726c57c00cb55a4702a1650131365500cf471', 'hex'),
+            salt: new Buffer('salt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'SCRYPT',
+              hash: 'SHA256',
+              cpu_memory_cost: 32768,
+              block_size: 8,
+              parallelization: 1,
+              derived_key_length: 32
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      }, function(error) {
+        done(err);
+      });
+    });
+  });
+});

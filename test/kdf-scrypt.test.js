@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var Scrypt = require('../src/kdf-scrypt.js');
+var Scrypt = require('../src/plugins/scrypt.js');
 
 describe('Scrypt', function() {
   describe('KDF Spec', function() {
@@ -8,7 +8,7 @@ describe('Scrypt', function() {
       expect(Scrypt.defaultSpec).to.eql({
         algorithm: 'SCRYPT',
         hash: "SHA256",
-        cpu_memory_cost: 16384,
+        cpu_memory_cost: 32768,
         parallelization: 1,
         block_size: 8,
         derived_key_length: 32
@@ -120,7 +120,7 @@ describe('Scrypt', function() {
     });
 
     it('should validate vector 3', function(done) {
-      new Scrypt({ derived_key_length: 64 })
+      new Scrypt({ cpu_memory_cost: 16384, derived_key_length: 64 })
         .deriveKey('pleaseletmein', 'SodiumChloride', function(err, key) {
           try {
             expect(key.derived_key.toString('hex')).to.equal('7023bdcb3afd7348461c06cd81fd38ebfda8fbba904f8e3ea9b543f6545da1f2d5432955613f0fcf62d49705242a9af9e61e85dc0d651e40dfcf017b45575887');

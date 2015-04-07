@@ -1,7 +1,7 @@
 'use strict';
 
-var hashes = require('./kdf-hashes');
-var BaseKDF = require('./kdf-base');
+var BaseKDF = require('./basekdf');
+var hashes = require('../hashes');
 var crypto = require('crypto');
 var util = require('util');
 
@@ -19,7 +19,7 @@ function makeSpec(defaultSpec, spec) {
     throw new TypeError('Iterations is not a number');
   newSpec.iterations = Number(spec.iterations)
                     || Number(defaultSpec.iterations)
-                    || 4096;
+                    || 65536;
 
   // Normalize derived key length
   if (spec.derived_key_length && Number.isNaN(Number(spec.derived_key_length)))
@@ -56,6 +56,7 @@ function deriveKey(secret, salt, spec, callback) {
 }
 
 // Our PBKDF2 class
+util.inherits(PBKDF2, BaseKDF);
 function PBKDF2(kdfSpec) {
   if (!(this instanceof PBKDF2)) return new PBKDF2();
 
@@ -73,9 +74,6 @@ Object.defineProperty(PBKDF2, 'defaultSpec', {
     return JSON.parse(JSON.stringify(defaultSpec));
   }
 });
-
-// Inherit from base KDF
-util.inherits(PBKDF2, BaseKDF);
 
 // Export our class
 exports = module.exports = PBKDF2;

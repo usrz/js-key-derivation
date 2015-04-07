@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "bcrypt": "^0.8.2",
+    "promise": "^6.1.0",
     "scrypt": "^4.0.7"
   }
 }

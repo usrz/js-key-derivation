@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var Bcrypt = require('../src/kdf-bcrypt.js');
+var Bcrypt = require('../src/plugins/bcrypt.js');
 var bcrypt = require('bcrypt');
 
 var tests = [
@@ -54,11 +54,9 @@ describe('Bcrypt', function() {
 
     it('should construct with a different spec', function() {
       expect(new Bcrypt({
-        hash: "SHA512",
         rounds: 31
       }).kdfSpec).to.eql({
         algorithm: 'BCRYPT',
-        hash: 'SHA512',
         rounds: 31
       });
     });
@@ -67,12 +65,6 @@ describe('Bcrypt', function() {
       expect(function() {
         new Bcrypt({ algorithm: 'BCRYP' });
       }).to.throw("Algorithm must be BCRYPT");
-    });
-
-    it('should fail with a wrong hash', function() {
-      expect(function() {
-        new Bcrypt({ hash: 'silly-hash' });
-      }).to.throw("Unknown hash silly-hash");
     });
 
     it('should fail with the wrong rounds count', function() {
