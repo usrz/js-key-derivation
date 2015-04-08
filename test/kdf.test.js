@@ -62,6 +62,25 @@ describe('Key Derivation', function() {
     }).to.throw('Can not construct with number');
   });
 
+  describe('Random security', function() {
+
+    it('should work with a secure random', function(done) {
+      new KDF({ algorithm: 'pbkdf2', iterations: 1024 })
+        .withSecureRandom(true)
+        .deriveKey("password", null, function(err, result) {
+          done(err);
+        });
+    })
+
+    it('should work with a pseudo random', function(done) {
+      new KDF({ algorithm: 'pbkdf2', iterations: 1024 })
+        .withSecureRandom(false)
+        .deriveKey("password", null, function(err, result) {
+          done(err);
+        });
+    })
+  });
+
   describe('Callback operation', function() {
 
     it('should work with Bcrypt', function(done) {

@@ -1,6 +1,7 @@
 'use strict';
 
 var Promise = global.Promise || require('promise');
+var hashes = require('./hashes');
 var util = require('util');
 
 var pluginClasses = {
@@ -44,6 +45,15 @@ function KeyDerivator(spec) {
 
   // Define our properties: "spec" and "deriveKey" delegating to the plugin
   Object.defineProperties(this, {
+    'withSecureRandom': {
+      configurable: false,
+      enumerable: true,
+      value: function(secure) {
+        if (secure === undefined) secure = true;
+        plugin.useSecureRandom = secure;
+        return this;
+      }
+    },
     'kdfSpec': {
       configurable: false,
       enumerable: true,
@@ -77,11 +87,18 @@ function KeyDerivator(spec) {
   });
 }
 
-Object.defineProperty(KeyDerivator, 'defaultSpec', {
-  configurable: false,
-  enumerable: true,
-  get: function() {
-    return JSON.parse(JSON.stringify(defaultSpec));
+Object.defineProperties(KeyDerivator, {
+  'defaultSpec': {
+    configurable: false,
+    enumerable: true,
+    get: function() {
+      return JSON.parse(JSON.stringify(defaultSpec));
+    }
+  },
+  'knownHashes': {
+    configurable: false,
+    enumerable: true,
+    value: hashes
   }
 });
 

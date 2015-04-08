@@ -3,7 +3,21 @@
 var crypto = require('crypto');
 
 function BaseKDF(kdfSpec, saltLength, deriveKeyFn) {
+
+  // On the plugin only!
+  var useSecureRandom = false;
+
   Object.defineProperties(this, {
+    'useSecureRandom': {
+      configurable: false,
+      enumerable: true,
+      get: function() {
+        return useSecureRandom;
+      },
+      set: function(secure) {
+        useSecureRandom = secure ? true : false;
+      }
+    },
     'kdfSpec': {
       configurable: false,
       enumerable: true,
@@ -32,6 +46,8 @@ function BaseKDF(kdfSpec, saltLength, deriveKeyFn) {
             salt = new Buffer(arguments[index ++], 'utf8');
           } else if (arguments[index] instanceof Buffer) {
             salt = arguments[index ++];
+          } else if (arguments[index] === null) {
+            index ++; // specifically set "salt" to null
           } else if (typeof(arguments[index]) !== 'function') {
             throw new TypeError('Argument ' + (index + 1) + ' must be a salt string, Buffer or a callback function');
           }
@@ -65,8 +81,10 @@ function BaseKDF(kdfSpec, saltLength, deriveKeyFn) {
         // If we have no salt, calculate it
         if (salt) {
           return wrapper(null, salt);
-        } else {
+        } else if (useSecureRandom) {
           crypto.randomBytes(saltLength, wrapper);
+        } else {
+          crypto.pseudoRandomBytes(saltLength, wrapper);
         }
       }
     }

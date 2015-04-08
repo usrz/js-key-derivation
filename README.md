@@ -6,9 +6,10 @@ hashing functions, for the unintiated) presenting a single and consistent API
 around different ways to "hash" secrets.
 
 * [Install and use](#install-and-use)
-* [API Description](#api-description);
+* [API Description](#api-description)
   * [Key derivation with callbacks](#key-derivation-with-callbacks)
   * [Key derivation with promises](#key-derivation-with-promises)
+  * [Other properties an methods](#other-properties-and-methods)
   * [String encoding](string-encoding)
   * [Result structure](result-structure)
 * [Algorithms and KDF specs](#algorithms-and-kdf-specs)
@@ -95,6 +96,46 @@ The `deriveKey(...)` function takes two arguments:
 * `secret`: a `string` or `Buffer` containing the data to be hashed.
 * `salt`: the **optional** salt for the computation; if unspecified a _random_
   one will be generated (again a `string` or `Buffer`).
+
+
+#### Other properties and methods
+
+```javascript
+var KDF = require('key-derivation');
+KDF.defaultSpec;
+```
+
+The **static** immutable `defaultSpec` property of the `KDF` class contains
+the base _KDF spec_ that will be used when invoking the constructor without
+(or only partial) arguments.
+
+```javascript
+var kdf = new KDF(spec);
+console.log(kdf.kdfSpec);
+```
+
+The `kdfSpec` _immutable_ property of each `KDF` **instance** will contain the
+full _KDF spec_ used by the `deriveKey(...)` and `promiseKey(...)` functions.
+
+```javascript
+var kdf = new KDF(spec).withSecureRandom();
+```
+
+`KDF` instances are constructed by default with a non-failing pseudo random
+number generation (as secure random number generations might generate errors).
+
+The `withSecureRandom()` function invked without parameters will instruct the
+`KDF` instance to use a (potentially failing) cryptographically secure random
+number generator.
+
+The optional boolean parameter to this method allows specific enabling or
+disabling of this feature.
+
+See the documentation for Node's `crypto` module, and the difference between
+its `randomBytes(...)` and `pseudoRandomBytes(...)` for the difference.
+
+
+This function always returns the same `KDF` instance it was called on.
 
 
 #### String encoding
