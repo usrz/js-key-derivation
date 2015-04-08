@@ -46,8 +46,8 @@ function BaseKDF(kdfSpec, saltLength, deriveKeyFn) {
             salt = new Buffer(arguments[index ++], 'utf8');
           } else if (arguments[index] instanceof Buffer) {
             salt = arguments[index ++];
-          } else if (arguments[index] === null) {
-            index ++; // specifically set "salt" to null
+          } else if (arguments[index] == null) {
+            index ++; // No salt (might be explicit null or undefined)
           } else if (typeof(arguments[index]) !== 'function') {
             throw new TypeError('Argument ' + (index + 1) + ' must be a salt string, Buffer or a callback function');
           }

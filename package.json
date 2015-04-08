@@ -1,7 +1,7 @@
 {
   "name": "key-derivation",
   "description": "Abstraction around various Key Derivation Functions",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "Pier Fumagalli",
     "email": "pier@usrz.com"
