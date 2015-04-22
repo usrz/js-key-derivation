@@ -148,6 +148,27 @@ describe('Key Derivation', function() {
         }
       });
     });
+
+    it('should work with HMAC', function(done) {
+      new KDF('hmac').deriveKey("password", "salt", function(err, result) {
+        if (err) return done(err);
+
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('84ec44c7d6fc41917953a1dafca3c7d7856f7a9d0328b991b76f0d36be1224b9', 'hex'),
+            salt: new Buffer('salt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'HMAC',
+              hash: 'SHA256',
+              derived_key_length: 32
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
   });
 
   describe('Promises operation', function() {
@@ -206,6 +227,27 @@ describe('Key Derivation', function() {
               cpu_memory_cost: 32768,
               block_size: 8,
               parallelization: 1,
+              derived_key_length: 32
+            }
+          });
+          done();
+        } catch (error) {
+          done(error);
+        }
+      }, function(error) {
+        done(err);
+      });
+    });
+
+    it('should work with HMAC', function(done) {
+      new KDF('hmac').promiseKey("password", "salt").then(function(result) {
+        try {
+          expect(result).to.eql({
+            derived_key: new Buffer('84ec44c7d6fc41917953a1dafca3c7d7856f7a9d0328b991b76f0d36be1224b9', 'hex'),
+            salt: new Buffer('salt', 'utf8'),
+            kdf_spec: {
+              algorithm: 'HMAC',
+              hash: 'SHA256',
               derived_key_length: 32
             }
           });

@@ -7,7 +7,8 @@ var util = require('util');
 var pluginClasses = {
   'bcrypt': require('./plugins/bcrypt'),
   'pbkdf2': require('./plugins/pbkdf2'),
-  'scrypt': require('./plugins/scrypt')
+  'scrypt': require('./plugins/scrypt'),
+  'hmac'  : require('./plugins/hmac')
 }
 
 var defaultClass = pluginClasses.scrypt;
