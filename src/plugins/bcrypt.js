@@ -42,17 +42,16 @@ function stringToBuffer(string) {
 
 /* ========================================================================== */
 
-function makeSpec(defaultSpec, spec) {
+function makeSpec(spec) {
   var newSpec = {};
 
   // Normalize algorithm to upper case
-  newSpec.algorithm = (spec.algorithm || defaultSpec.algorithm || 'BCRYPT').toUpperCase();
+  newSpec.algorithm = (spec.algorithm || 'BCRYPT').toUpperCase();
 
   // Normalize rounds
   if (spec.rounds && Number.isNaN(Number(spec.rounds)))
     throw new TypeError('Rounds is not a number');
   newSpec.rounds = Number(spec.rounds)
-                || Number(defaultSpec.rounds)
                 || 10;
 
   // Make sure we have the correct algorithm
@@ -90,13 +89,13 @@ util.inherits(Bcrypt, BaseKDF);
 function Bcrypt(kdfSpec) {
   if (!(this instanceof Bcrypt)) return new Bcrypt();
 
-  var spec = makeSpec({}, kdfSpec || {});
+  var spec = makeSpec(kdfSpec || {});
   var saltLength = 16;
   BaseKDF.call(this, spec, saltLength, deriveKey);
 }
 
 // Default spec, always clone
-var defaultSpec = makeSpec({}, {});
+var defaultSpec = makeSpec({});
 Object.defineProperties(Bcrypt, {
   'defaultSpec': {
     configurable: false,

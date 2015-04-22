@@ -5,32 +5,29 @@ var hashes = require('../hashes');
 var scrypt = require('scrypt');
 var util = require('util');
 
-function makeSpec(defaultSpec, spec) {
+function makeSpec(spec) {
   var newSpec = {};
 
   // Normalize algorithm and hash to upper case
-  newSpec.algorithm = (spec.algorithm || defaultSpec.algorithm || 'SCRYPT').toUpperCase();
-  newSpec.hash = hashes.validate(spec.hash || defaultSpec.hash || 'SHA256');
+  newSpec.algorithm = (spec.algorithm || 'SCRYPT').toUpperCase();
+  newSpec.hash = hashes.validate(spec.hash || 'SHA256');
 
   // Normalize cpu/memory cost
   if (spec.cpu_memory_cost && Number.isNaN(Number(spec.cpu_memory_cost)))
     throw new TypeError('CPU/Memory cost is not a number');
   newSpec.cpu_memory_cost = Number(spec.cpu_memory_cost)
-                         || Number(defaultSpec.cpu_memory_cost)
                          || 32768;
 
   // Normalize block size
   if (spec.block_size && Number.isNaN(Number(spec.block_size)))
     throw new TypeError('Block size is not a number');
   newSpec.block_size = Number(spec.block_size)
-                    || Number(defaultSpec.block_size)
                     || 8;
 
   // Normalize parallelization
   if (spec.parallelization && Number.isNaN(Number(spec.parallelization)))
     throw new TypeError('Parallelization is not a number');
   newSpec.parallelization = Number(spec.parallelization)
-                         || Number(defaultSpec.parallelization)
                          || 1;
 
 
@@ -38,7 +35,6 @@ function makeSpec(defaultSpec, spec) {
   if (spec.derived_key_length && Number.isNaN(Number(spec.derived_key_length)))
     throw new TypeError('Derived key length is not a number');
   newSpec.derived_key_length = Number(spec.derived_key_length)
-                            || Number(defaultSpec.derived_key_length)
                             || 32;
 
   // Make sure we have the correct algorithm and hash
@@ -84,13 +80,13 @@ util.inherits(Scrypt, BaseKDF);
 function Scrypt(kdfSpec) {
   if (!(this instanceof Scrypt)) return new Scrypt();
 
-  var spec = makeSpec({}, kdfSpec || {});
+  var spec = makeSpec(kdfSpec || {});
   var saltLength = hashes.digestLength(spec.hash);
   BaseKDF.call(this, spec, saltLength, deriveKey);
 }
 
 // Default spec, always clone
-var defaultSpec = makeSpec({}, {});
+var defaultSpec = makeSpec({});
 Object.defineProperty(Scrypt, 'defaultSpec', {
   configurable: false,
   enumerable: true,

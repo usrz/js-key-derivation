@@ -26,6 +26,15 @@ describe('PBKDF2', function() {
       });
     });
 
+    it('should construct with a different hash', function() {
+      expect(new PBKDF2({ hash: "SHA512" }).kdfSpec).to.eql({
+        algorithm: 'PBKDF2',
+        hash: 'SHA512',
+        iterations: 65536,
+        derived_key_length: 64
+      });
+    });
+
     it('should fail with a wrong algorithm', function() {
       expect(function() {
         new PBKDF2({ algorithm: 'PBKDF' });

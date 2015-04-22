@@ -5,27 +5,25 @@ var hashes = require('../hashes');
 var crypto = require('crypto');
 var util = require('util');
 
-function makeSpec(defaultSpec, spec) {
+function makeSpec(spec) {
   var newSpec = {};
 
   // Normalize algorithm to upper case
-  newSpec.algorithm = (spec.algorithm || defaultSpec.algorithm || 'PBKDF2').toUpperCase();
+  newSpec.algorithm = (spec.algorithm || 'PBKDF2').toUpperCase();
 
   // Normalize and validate the hash name
-  newSpec.hash = hashes.validate(spec.hash || defaultSpec.hash || 'SHA256');
+  newSpec.hash = hashes.validate(spec.hash || 'SHA256');
 
   // Normalize iterations
   if (spec.iterations && Number.isNaN(Number(spec.iterations)))
     throw new TypeError('Iterations is not a number');
   newSpec.iterations = Number(spec.iterations)
-                    || Number(defaultSpec.iterations)
                     || 65536;
 
   // Normalize derived key length
   if (spec.derived_key_length && Number.isNaN(Number(spec.derived_key_length)))
     throw new TypeError('Derived key length is not a number');
   newSpec.derived_key_length = Number(spec.derived_key_length)
-                            || Number(defaultSpec.derived_key_length)
                             || null;
 
   // Make sure we have the correct algorithm
@@ -60,13 +58,13 @@ util.inherits(PBKDF2, BaseKDF);
 function PBKDF2(kdfSpec) {
   if (!(this instanceof PBKDF2)) return new PBKDF2();
 
-  var spec = makeSpec({}, kdfSpec || {});
+  var spec = makeSpec(kdfSpec || {});
   var saltLength = hashes.digestLength(spec.hash);
   BaseKDF.call(this, spec, saltLength, deriveKey);
 }
 
 // Default spec, always clone
-var defaultSpec = makeSpec({}, {});
+var defaultSpec = makeSpec({});
 Object.defineProperty(PBKDF2, 'defaultSpec', {
   configurable: false,
   enumerable: true,
