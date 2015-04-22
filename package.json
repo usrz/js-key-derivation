@@ -1,7 +1,7 @@
 {
   "name": "key-derivation",
   "description": "Abstraction around various Key Derivation Functions",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": {
     "name": "Pier Fumagalli",
     "email": "pier@usrz.com"
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "bcrypt": "^0.8.2",
-    "promise": "^6.1.0",
+    "promise": "^7.0.0",
     "scrypt": "^4.0.7"
   }
 }
